@@ -1,0 +1,30 @@
+services:
+  php:
+    command: >
+      sh -c "
+      composer install --no-dev --optimize-autoloader &&
+      php artisan config:cache &&
+      php artisan migrate &&
+      php-fpm"
+    environment:
+      APP_ENV: production
+      APP_DEBUG: false
+    volumes:
+      - ./src:/var/www/html
+      - ./php/php.prod.ini:/usr/local/etc/php/php.ini  # ← 本番用 php.ini を明示的にマウント
+    ports: []  # 5173は不要
+
+  nginx:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./nginx/prod.conf:/etc/nginx/conf.d/default.conf
+      - ./src:/var/www/html  # ← nginxもLaravelアプリにアクセスするため必要
+
+  phpmyadmin:
+    image: none
+    deploy:
+      replicas: 0
+

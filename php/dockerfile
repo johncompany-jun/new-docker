@@ -1,0 +1,36 @@
+FROM php:8.2-fpm
+
+# php.ini を配置（任意：src/php/php.ini がある場合）
+COPY php.ini /usr/local/etc/php/
+
+# 必要なパッケージをインストール
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    curl \
+    libzip-dev \
+    libonig-dev \
+    libpng-dev \
+    libxml2-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libwebp-dev \
+    libgd-dev \
+    zip \
+    vim \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install pdo_mysql mbstring zip gd
+
+
+# ここにXdebugのインストールと有効化を追加
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+# Composerをインストール（グローバル）
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Node.js 18（Viteやフロントビルド用）
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm
+
+# 作業ディレクトリをLaravelのルートに設定
+WORKDIR /var/www/html
