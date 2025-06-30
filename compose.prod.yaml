@@ -1,6 +1,7 @@
 services:
   db:
     image: mysql:8.0
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE: docker_laravel_db
@@ -12,31 +13,13 @@ services:
       - laravel
 
   php:
-    command: >
-      sh -c "
-      composer install --no-dev --optimize-autoloader &&
-      php artisan config:cache &&
-      php artisan migrate &&
-      php-fpm"
-    environment:
-      APP_ENV: production
-      APP_DEBUG: false
+    build:
+      context: .
+      dockerfile: php/Dockerfile.prod
     volumes:
       - ./src:/var/www/html
-      - ./php/php.prod.ini:/usr/local/etc/php/php.ini
-    networks:
-      - laravel
-
-  nginx:
-    image: nginx:latest
-    ports:
-      - "8080:80"
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - ./nginx/prod.conf:/etc/nginx/conf.d/default.conf
-      - ./src:/var/www/html
-    depends_on:
-      - php
+    command: php-fpm
+    ports: []  # 公開せずNginx経由に限定
     networks:
       - laravel
 
@@ -45,5 +28,3 @@ volumes:
 
 networks:
   laravel:
-
-

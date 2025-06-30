@@ -1,0 +1,20 @@
+FROM php:8.2-fpm
+
+# 必要なシステムパッケージをインストール
+RUN apt-get update && apt-get install -y \
+    git unzip curl libzip-dev libonig-dev libpng-dev libxml2-dev \
+    libjpeg-dev libfreetype6-dev libwebp-dev libgd-dev zip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install pdo_mysql mbstring zip gd \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Composerをインストール
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Node.js 18（Viteやフロントビルド用）
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm
+
+# 作業ディレクトリ
+WORKDIR /var/www/html
