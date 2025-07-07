@@ -1,15 +1,11 @@
-services:
-  php:
-    command: php-fpm
-    ports: []  # 本番ではViteやXdebugのポートは不要
-    environment:
-      APP_ENV: production
-      APP_DEBUG: false
-
-  nginx:
-    ports:
-      - "80:80"  # 本番では LB からのHTTPを受けるのみ
-    volumes:
-      - ./src:/var/www/html
-      - ./nginx/prod.conf:/etc/nginx/conf.d/default.conf
-
+nginx:
+  image: nginx:alpine
+  ports:
+    - "8080:80"
+  volumes:
+    - ./src:/var/www/html
+    - ./nginx/prod.conf:/etc/nginx/conf.d/default.conf
+  depends_on:
+    - php
+  networks:
+    - laravel

@@ -154,6 +154,9 @@
       <path value="$PROJECT_DIR$/src/vendor/doctrine/deprecations" />
       <path value="$PROJECT_DIR$/src/vendor/phpstan/phpdoc-parser" />
       <path value="$PROJECT_DIR$/src/vendor/fidry/cpu-core-counter" />
+      <path value="$PROJECT_DIR$/src/vendor/livewire/livewire" />
+      <path value="$PROJECT_DIR$/src/vendor/livewire/flux" />
+      <path value="$PROJECT_DIR$/src/vendor/livewire/volt" />
     </include_path>
   </component>
   <component name="PhpInterpreters">
